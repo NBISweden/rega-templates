@@ -115,10 +115,3 @@ module "inventory" {
   service_private_ip = module.service.private_ip_list
   inventory_template = var.inventory_template
 }
-
-# Terraform state backend
-terraform {
-  backend "{{ backend_type }}" {
-  }
-}
-
