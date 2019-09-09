@@ -1,0 +1,18 @@
+# Python virtualenv directories
+venv*
+
+# Kubernetes config files
+cluster.yml
+kube_config_cluster.yml
+
+# ssh keys for the underlying vms
+ssh_key*
+
+# Ansible files
+inventory
+playbooks/group_vars/all
+
+# Terraform files
+terraform.tfstate*
+terraform_plugins
+.terraform
