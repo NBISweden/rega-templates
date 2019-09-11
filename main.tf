@@ -36,6 +36,8 @@ module "master" {
   os_ssh_keypair     = module.keypair.keypair_name
   ssh_bastion_host   = element(module.edge.public_ip_list, 0)
   assign_floating_ip = var.master_assign_floating_ip
+  role    = "[controlplane, etcd]"
+  node_type = "master"
 }
 
 # Create service nodes
@@ -54,6 +56,8 @@ module "service" {
   os_ssh_keypair     = module.keypair.keypair_name
   ssh_bastion_host   = element(module.edge.public_ip_list, 0)
   assign_floating_ip = var.service_assign_floating_ip
+  role    = "[worker]"
+  node_type = "service"
 }
 
 # Create edge nodes
@@ -72,6 +76,8 @@ module "edge" {
   os_ssh_keypair     = module.keypair.keypair_name
   ssh_bastion_host   = element(module.edge.public_ip_list, 0)
   assign_floating_ip = var.edge_assign_floating_ip
+  role    = "[worker]"
+  node_type = "edge"
 }
 
 # Provision Kubernetes
