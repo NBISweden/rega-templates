@@ -40,10 +40,12 @@ data "template_file" "cloud_init" {
 data "null_data_source" "nodes" {
   count = var.node_count
   inputs = {
+    hostname = "${var.name_prefix}-${format("%03d", count.index)}"
     internal_address = element(openstack_compute_instance_v2.instance.*.network.0.fixed_ip_v4, count.index)
     address = element(local.address_list, count.index)
     user    = var.ssh_user
     ssh_key = var.ssh_key
+    role    = var.role
+    node_type = var.node_type
   }
 }
-
