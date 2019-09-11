@@ -53,3 +53,10 @@ variable "ssh_bastion_host" {
   default     = ""
 }
 
+variable "role" {
+  description = "Role for this node"
+}
+
+variable "node_type" {
+  description = "Type of node"
+}
