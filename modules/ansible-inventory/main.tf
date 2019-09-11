@@ -1,56 +1,13 @@
 variable ssh_user {}
 variable cluster_prefix {}
 
+variable master_nodes {}
+variable edge_nodes {}
+variable service_nodes {}
+
 variable master_count {}
-
-variable master_hostnames {
-  type    = list(string)
-  default = [""]
-}
-
-variable master_public_ip {
-  type    = list(string)
-  default = [""]
-}
-
-variable master_private_ip {
-  type    = list(string)
-  default = [""]
-}
-
 variable service_count {}
-
-variable service_hostnames {
-  type    = list(string)
-  default = [""]
-}
-
-variable service_public_ip {
-  type    = list(string)
-  default = [""]
-}
-
-variable service_private_ip {
-  type    = list(string)
-  default = [""]
-}
-
 variable edge_count {}
-
-variable edge_hostnames {
-  type    = list(string)
-  default = [""]
-}
-
-variable edge_public_ip {
-  type    = list(string)
-  default = [""]
-}
-
-variable edge_private_ip {
-  type    = list(string)
-  default = [""]
-}
 
 variable inventory_template {}
 
@@ -60,18 +17,18 @@ variable inventory_output_file {
 
 locals {
 
-  master_hostnames  = slice(var.master_hostnames,  0, min(var.master_count, length(var.master_hostnames)))
-  master_private_ip = slice(var.master_private_ip, 0, min(var.master_count, length(var.master_private_ip)))
+  master_hostnames  = slice(var.master_nodes[*].hostname,  0, min(var.master_count, length(var.master_nodes[*].hostname)))
+  master_private_ip = slice(var.master_nodes[*].internal_address, 0, min(var.master_count, length(var.master_nodes[*].internal_address)))
 
-  edge_hostnames  = slice(var.edge_hostnames,  0, min(var.edge_count, length(var.edge_hostnames)))
-  edge_private_ip = slice(var.edge_private_ip, 0, min(var.edge_count, length(var.edge_private_ip)))
+  edge_hostnames  = slice(var.edge_nodes[*].hostname,  0, min(var.edge_count, length(var.edge_nodes[*].hostname)))
+  edge_private_ip = slice(var.edge_nodes[*].internal_address, 0, min(var.edge_count, length(var.edge_nodes[*].internal_address)))
 
-  service_hostnames  = slice(var.service_hostnames,  0, min(var.service_count, length(var.service_hostnames)))
-  service_private_ip = slice(var.service_private_ip, 0, min(var.service_count, length(var.service_private_ip)))
+  service_hostnames  = slice(var.service_nodes[*].hostname,  0, min(var.service_count, length(var.service_nodes[*].hostname)))
+  service_private_ip = slice(var.service_nodes[*].internal_address, 0, min(var.service_count, length(var.service_nodes[*].internal_address)))
 
-  masters  = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.master_hostnames,  slice(var.master_public_ip,  0, var.master_count),  var.ssh_user, local.master_private_ip  ))
-  edges    = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.edge_hostnames,    slice(var.edge_public_ip,    0, var.edge_count),    var.ssh_user, local.edge_private_ip    ))
-  services = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.service_hostnames, slice(var.service_public_ip, 0, var.service_count), var.ssh_user, local.service_private_ip ))
+  masters  = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.master_hostnames,  slice(var.master_nodes[*].address,  0, var.master_count),  var.ssh_user, local.master_private_ip  ))
+  edges    = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.edge_hostnames,    slice(var.edge_nodes[*].address,    0, var.edge_count),    var.ssh_user, local.edge_private_ip    ))
+  services = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.service_hostnames, slice(var.service_nodes[*].address, 0, var.service_count), var.ssh_user, local.service_private_ip ))
 }
 
 # Generate inventory from template file
