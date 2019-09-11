@@ -42,6 +42,14 @@ data "template_file" "inventory" {
   }
 }
 
+resource "local_file" "nodes_json" {
+  filename = "${path.root}/nodes.json"
+  content = "${jsonencode([var.master_nodes,var.edge_nodes,var.service_nodes])}"
+  provisioner "local-exec" {
+    command = "chmod 644 '${path.root}/nodes.json'"
+  }
+}
+
 # Write the template to a file
 resource "null_resource" "local" {
   # Trigger rewrite of inventory, uuid() generates a random string everytime it is called
