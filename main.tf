@@ -107,17 +107,11 @@ module "inventory" {
   source             = "./modules/ansible-inventory"
   cluster_prefix     = var.cluster_prefix
   ssh_user           = var.ssh_user
+  master_nodes       = module.master.nodes
+  edge_nodes         = module.edge.nodes
+  service_nodes      = module.service.nodes
   master_count       = var.master_count
-  master_hostnames   = module.master.hostnames
-  master_public_ip   = module.master.access_ip_list
-  master_private_ip  = module.master.private_ip_list
   edge_count         = var.edge_count
-  edge_hostnames     = module.edge.hostnames
-  edge_public_ip     = module.edge.access_ip_list
-  edge_private_ip    = module.edge.private_ip_list
   service_count      = var.service_count
-  service_hostnames  = module.service.hostnames
-  service_public_ip  = module.service.access_ip_list
-  service_private_ip = module.service.private_ip_list
   inventory_template = var.inventory_template
 }
