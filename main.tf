@@ -102,9 +102,9 @@ module "rke" {
   os_user_domain_name       = var.os_user_domain_name
 }
 
-# Generate Ansible inventory
-module "inventory" {
-  source             = "./modules/ansible-inventory"
+# Generate Ansible files
+module "ansible" {
+  source             = "./modules/ansible"
   cluster_prefix     = var.cluster_prefix
   ssh_user           = var.ssh_user
   master_nodes       = module.master.nodes
