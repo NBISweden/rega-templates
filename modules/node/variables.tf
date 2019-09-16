@@ -52,6 +52,6 @@ variable "role" {
   description = "Role for this node"
 }
 
-variable "node_type" {
-  description = "Type of node"
+variable "node_label" {
+  description = "Label assigned to node"
 }
