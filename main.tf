@@ -35,8 +35,8 @@ module "master" {
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
   assign_floating_ip = var.master_assign_floating_ip
-  role    = "[controlplane, etcd]"
-  node_type = "master"
+  role               = var.master_node_roles
+  node_label         = var.master_node_label
 }
 
 # Create service nodes
@@ -54,8 +54,8 @@ module "service" {
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
   assign_floating_ip = var.service_assign_floating_ip
-  role    = "[worker]"
-  node_type = "service"
+  role               = ["worker"]
+  node_label         = var.service_node_label
 }
 
 # Create edge nodes
@@ -73,8 +73,8 @@ module "edge" {
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
   assign_floating_ip = var.edge_assign_floating_ip
-  role    = "[worker]"
-  node_type = "edge"
+  role               = ["worker"]
+  node_label         = var.edge_node_label
 }
 
 # Provision Kubernetes
