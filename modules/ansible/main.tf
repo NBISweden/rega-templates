@@ -75,13 +75,25 @@ data "template_file" "group_vars" {
 }
 
 # Write the template to a file
-resource "null_resource" "local" {
+resource "null_resource" "inventory" {
   # Trigger rewrite of inventory, uuid() generates a random string everytime it is called
   triggers = {
     uuid = uuid()
     template = data.template_file.inventory.rendered
+
 }
   provisioner "local-exec" {
     command = "echo \"${data.template_file.inventory.rendered}\" > \"${path.root}/${var.inventory_output_file}\""
+  }
+}
+
+resource "null_resource" "group_vars" {
+  triggers = {
+    uuid = uuid()
+    template = data.template_file.group_vars.rendered
+
+}
+  provisioner "local-exec" {
+    command = "echo \"${data.template_file.group_vars.rendered}\" > \"${path.root}/${var.group_vars_output_file}\""
   }
 }
