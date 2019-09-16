@@ -54,7 +54,7 @@ resource "local_file" "nodes_json" {
 
 
 data "template_file" "inventory" {
-  template = "${file("${path.root}/${ var.inventory_template }")}"
+  template = file("${path.root}/${ var.inventory_template }")
 
   vars = {
     masters                = local.masters
