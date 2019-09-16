@@ -25,9 +25,9 @@ dynamic nodes {
       internal_address = nodes.value.internal_address
       address = nodes.value.address
       user    = nodes.value.user
-      role    = ["controlplane", "etcd"]
+      role    = split(",", nodes.value.role)
       ssh_key = file("${nodes.value.ssh_key}")
-      labels  =  {"node_type" = "master"}
+      labels  =  {"node_type" = nodes.value.node_label}
     }
   }
 
@@ -37,9 +37,9 @@ dynamic nodes {
       internal_address = nodes.value.internal_address
       address = nodes.value.address
       user    = nodes.value.user
-      role    = ["worker"]
+      role    = split(",", nodes.value.role)
       ssh_key = file("${nodes.value.ssh_key}")
-      labels  =  {"node_type" = "edge"}
+      labels  =  {"node_type" = nodes.value.node_label}
     }
   }
 
@@ -49,12 +49,11 @@ dynamic nodes {
       internal_address = nodes.value.internal_address
       address = nodes.value.address
       user    = nodes.value.user
-      role    = ["worker"]
+      role    = split(",", nodes.value.role)
       ssh_key = file("${nodes.value.ssh_key}")
-      labels  =  {"node_type" = "service"}
-    }
+      labels  =  {"node_type" = nodes.value.node_label}
   }
-
+}
   authentication {
     strategy = "x509"
     sans     = flatten([var.kubeapi_sans_list])
