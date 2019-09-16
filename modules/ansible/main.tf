@@ -39,9 +39,9 @@ locals {
   service_hostnames  = slice(var.service_nodes[*].hostname,  0, min(var.service_count, length(var.service_nodes[*].hostname)))
   service_private_ip = slice(var.service_nodes[*].internal_address, 0, min(var.service_count, length(var.service_nodes[*].internal_address)))
 
-  masters  = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.master_hostnames,  slice(var.master_nodes[*].address,  0, var.master_count),  var.ssh_user, local.master_private_ip  ))
-  edges    = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.edge_hostnames,    slice(var.edge_nodes[*].address,    0, var.edge_count),    var.ssh_user, local.edge_private_ip    ))
-  services = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.service_hostnames, slice(var.service_nodes[*].address, 0, var.service_count), var.ssh_user, local.service_private_ip ))
+  masters  = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.master_hostnames, slice(var.master_nodes[*].address, 0, var.master_count), var.ssh_user, local.master_private_ip))
+  edges    = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.edge_hostnames, slice(var.edge_nodes[*].address, 0, var.edge_count), var.ssh_user, local.edge_private_ip))
+  services = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.service_hostnames, slice(var.service_nodes[*].address, 0, var.service_count), var.ssh_user, local.service_private_ip))
 }
 
 # Generate inventory from template file
