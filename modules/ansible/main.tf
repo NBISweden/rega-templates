@@ -1,5 +1,6 @@
 variable ssh_user {}
 variable cluster_prefix {}
+variable public_host {}
 
 variable master_nodes {}
 variable edge_nodes {}
@@ -42,11 +43,14 @@ data "template_file" "inventory" {
   }
 }
 
-resource "local_file" "nodes_json" {
-  filename = "${path.root}/nodes.json"
-  content = "${jsonencode([var.master_nodes,var.edge_nodes,var.service_nodes])}"
-  provisioner "local-exec" {
-    command = "chmod 644 '${path.root}/nodes.json'"
+# Generate group_vars/all from template file
+data "template_file" "group_vars" {
+  template = file("${path.root}/${ var.group_vars_template_file }")
+
+  vars = {
+    ssh_user               = var.ssh_user
+    public_host            = var.public_host
+    edge_count             = var.edge_count
   }
 }
 
