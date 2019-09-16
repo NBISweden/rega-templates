@@ -44,7 +44,15 @@ locals {
   services = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.service_hostnames, slice(var.service_nodes[*].address, 0, var.service_count), var.ssh_user, local.service_private_ip))
 }
 
-# Generate inventory from template file
+resource "local_file" "nodes_json" {
+  filename = "${path.root}/${var.node_vars_output_file}"
+  content = "${jsonencode([var.master_nodes,var.edge_nodes,var.service_nodes])}"
+  provisioner "local-exec" {
+    command = "chmod 644 '${path.root}/${var.node_vars_output_file}'"
+  }
+}
+
+
 data "template_file" "inventory" {
   template = "${file("${path.root}/${ var.inventory_template }")}"
 
