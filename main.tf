@@ -86,7 +86,7 @@ module "rke" {
   ssh_bastion_host          = element(flatten([module.edge.public_ip_list, module.master.public_ip_list]), 0) 
   ssh_user                  = var.ssh_user
   ssh_key                   = var.ssh_key
-  kubeapi_sans_list         = module.edge.public_ip_list
+  kubeapi_sans_list         = flatten([module.edge.public_ip_list, module.master.public_ip_list])
   ignore_docker_version     = var.ignore_docker_version
   kubernetes_version        = var.kubernetes_version
   write_kube_config_cluster = var.write_kube_config_cluster
