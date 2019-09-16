@@ -16,6 +16,18 @@ variable inventory_output_file {
   default = "inventory"
 }
 
+variable node_vars_output_file {
+  default = "nodes.json"
+}
+
+variable group_vars_output_file {
+  default = "playbooks/group_vars/all"
+}
+
+variable group_vars_template_file {
+  default = "playbooks/group_vars/all-template"
+}
+
 locals {
 
   master_hostnames  = slice(var.master_nodes[*].hostname,  0, min(var.master_count, length(var.master_nodes[*].hostname)))
