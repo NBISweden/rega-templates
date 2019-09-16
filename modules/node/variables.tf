@@ -48,11 +48,6 @@ variable "floating_ip_pool" {
   default     = ""
 }
 
-variable "ssh_bastion_host" {
-  description = "Bastion SSH host (mandatory if assign_floating_ip is false)"
-  default     = ""
-}
-
 variable "role" {
   description = "Role for this node"
 }
