@@ -104,6 +104,7 @@ module "ansible" {
   source             = "./modules/ansible"
   cluster_prefix     = var.cluster_prefix
   ssh_user           = var.ssh_user
+  public_host        = element(flatten([module.edge.public_ip_list, module.master.public_ip_list]), 0) 
   master_nodes       = module.master.nodes
   edge_nodes         = module.edge.nodes
   service_nodes      = module.service.nodes
