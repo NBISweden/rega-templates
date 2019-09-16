@@ -1,1 +1,1 @@
-ansible_ssh_common_args: '-i {{ private_key }} -o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -q {{ ssh_user }}@{{ edge_ip }} -i {{ private_key }}"'
+ansible_ssh_common_args: "{{ '-i {} -o StrictHostKeyChecking=no'.format(private_key) if edge_count == 0 else '-i {} -o StrictHostKeyChecking=no -o ProxyCommand=\"ssh -W %h:%p -q {}@{} -i {}\"'.format(private_key, ssh_user, public_host, private_key) }}"
