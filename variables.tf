@@ -48,6 +48,16 @@ variable "master_count" {
   default     = 1
 }
 
+variable "master_node_label" {
+  description = "Label assigned to master node"
+  default = ""
+}
+
+variable "master_node_roles" {
+  description = "Roles assigned to master node"
+  default = ["etcd", "controlplane"]
+}
+
 variable "service_flavor_name" {
   description = "Service node flavor name"
 }
@@ -57,6 +67,11 @@ variable "service_count" {
   default     = 2
 }
 
+variable "service_node_label" {
+ description = "Label assigned to service node"
+ default = "default"
+}
+
 variable "edge_flavor_name" {
   description = "Edge node flavor name"
 }
@@ -64,6 +79,11 @@ variable "edge_flavor_name" {
 variable "edge_count" {
   description = "Number of edge nodes to deploy (this should be at least 1)"
   default     = 1
+}
+
+variable "edge_node_label" {
+ description = "Label assigned to edge node"
+ default = "edge"
 }
 
 variable "ignore_docker_version" {
