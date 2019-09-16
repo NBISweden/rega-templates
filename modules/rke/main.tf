@@ -70,7 +70,7 @@ dynamic nodes {
     provider = "nginx"
 
     node_selector = {
-      node_type = "edge"
+      node_type = "ingress"
     }
   }
 
