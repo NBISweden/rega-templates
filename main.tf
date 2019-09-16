@@ -34,7 +34,6 @@ module "master" {
   ssh_user           = var.ssh_user
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
-  ssh_bastion_host   = element(module.edge.public_ip_list, 0)
   assign_floating_ip = var.master_assign_floating_ip
   role    = "[controlplane, etcd]"
   node_type = "master"
@@ -54,7 +53,6 @@ module "service" {
   ssh_user           = var.ssh_user
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
-  ssh_bastion_host   = element(module.edge.public_ip_list, 0)
   assign_floating_ip = var.service_assign_floating_ip
   role    = "[worker]"
   node_type = "service"
@@ -74,7 +72,6 @@ module "edge" {
   ssh_user           = var.ssh_user
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
-  ssh_bastion_host   = element(module.edge.public_ip_list, 0)
   assign_floating_ip = var.edge_assign_floating_ip
   role    = "[worker]"
   node_type = "edge"
@@ -86,7 +83,7 @@ module "rke" {
   master_nodes              = module.master.nodes
   edge_nodes                = module.edge.nodes
   service_nodes             = module.service.nodes
-  ssh_bastion_host          = element(module.edge.public_ip_list, 0)
+  ssh_bastion_host          = element(flatten([module.edge.public_ip_list, module.master.public_ip_list]), 0) 
   ssh_user                  = var.ssh_user
   ssh_key                   = var.ssh_key
   kubeapi_sans_list         = module.edge.public_ip_list
