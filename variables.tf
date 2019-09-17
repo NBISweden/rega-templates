@@ -69,7 +69,7 @@ variable "service_count" {
 
 variable "service_node_label" {
  description = "Label assigned to service node"
- default = "default"
+ default = ""
 }
 
 variable "edge_flavor_name" {
@@ -83,7 +83,7 @@ variable "edge_count" {
 
 variable "edge_node_label" {
  description = "Label assigned to edge node"
- default = "edge"
+ default = "ingress"
 }
 
 variable "ignore_docker_version" {
@@ -165,4 +165,4 @@ variable "os_project_name" {
 variable "os_user_domain_name" {
   description = "Openstack domain name"
 }
-
+ 
