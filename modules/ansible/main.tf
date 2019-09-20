@@ -1,5 +1,6 @@
 variable ssh_user {}
 variable cluster_prefix {}
+variable public_host {}
 
 variable master_nodes {}
 variable edge_nodes {}
@@ -15,6 +16,18 @@ variable inventory_output_file {
   default = "inventory"
 }
 
+variable node_vars_output_file {
+  default = "nodes.json"
+}
+
+variable group_vars_output_file {
+  default = "playbooks/group_vars/all"
+}
+
+variable group_vars_template_file {
+  default = "playbooks/group_vars/all-template"
+}
+
 locals {
 
   master_hostnames  = slice(var.master_nodes[*].hostname,  0, min(var.master_count, length(var.master_nodes[*].hostname)))
@@ -26,14 +39,22 @@ locals {
   service_hostnames  = slice(var.service_nodes[*].hostname,  0, min(var.service_count, length(var.service_nodes[*].hostname)))
   service_private_ip = slice(var.service_nodes[*].internal_address, 0, min(var.service_count, length(var.service_nodes[*].internal_address)))
 
-  masters  = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.master_hostnames,  slice(var.master_nodes[*].address,  0, var.master_count),  var.ssh_user, local.master_private_ip  ))
-  edges    = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.edge_hostnames,    slice(var.edge_nodes[*].address,    0, var.edge_count),    var.ssh_user, local.edge_private_ip    ))
-  services = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.service_hostnames, slice(var.service_nodes[*].address, 0, var.service_count), var.ssh_user, local.service_private_ip ))
+  masters  = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.master_hostnames, slice(var.master_nodes[*].address, 0, var.master_count), var.ssh_user, local.master_private_ip))
+  edges    = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.edge_hostnames, slice(var.edge_nodes[*].address, 0, var.edge_count), var.ssh_user, local.edge_private_ip))
+  services = join("\n",formatlist("%s ansible_host=%s ansible_user=%s private_ip=%s", local.service_hostnames, slice(var.service_nodes[*].address, 0, var.service_count), var.ssh_user, local.service_private_ip))
 }
 
-# Generate inventory from template file
+resource "local_file" "nodes_json" {
+  filename = "${path.root}/${var.node_vars_output_file}"
+  content = "${jsonencode([var.master_nodes,var.edge_nodes,var.service_nodes])}"
+  provisioner "local-exec" {
+    command = "chmod 644 '${path.root}/${var.node_vars_output_file}'"
+  }
+}
+
+
 data "template_file" "inventory" {
-  template = "${file("${path.root}/${ var.inventory_template }")}"
+  template = file("${path.root}/${ var.inventory_template }")
 
   vars = {
     masters                = local.masters
@@ -42,22 +63,37 @@ data "template_file" "inventory" {
   }
 }
 
-resource "local_file" "nodes_json" {
-  filename = "${path.root}/nodes.json"
-  content = "${jsonencode([var.master_nodes,var.edge_nodes,var.service_nodes])}"
-  provisioner "local-exec" {
-    command = "chmod 644 '${path.root}/nodes.json'"
+# Generate group_vars/all from template file
+data "template_file" "group_vars" {
+  template = file("${path.root}/${ var.group_vars_template_file }")
+
+  vars = {
+    ssh_user               = var.ssh_user
+    public_host            = var.public_host
+    edge_count             = var.edge_count
   }
 }
 
 # Write the template to a file
-resource "null_resource" "local" {
+resource "null_resource" "inventory" {
   # Trigger rewrite of inventory, uuid() generates a random string everytime it is called
   triggers = {
     uuid = uuid()
     template = data.template_file.inventory.rendered
+
 }
   provisioner "local-exec" {
     command = "echo \"${data.template_file.inventory.rendered}\" > \"${path.root}/${var.inventory_output_file}\""
+  }
+}
+
+resource "null_resource" "group_vars" {
+  triggers = {
+    uuid = uuid()
+    template = data.template_file.group_vars.rendered
+
+}
+  provisioner "local-exec" {
+    command = "echo \"${data.template_file.group_vars.rendered}\" > \"${path.root}/${var.group_vars_output_file}\""
   }
 }

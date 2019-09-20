@@ -34,10 +34,9 @@ module "master" {
   ssh_user           = var.ssh_user
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
-  ssh_bastion_host   = element(module.edge.public_ip_list, 0)
   assign_floating_ip = var.master_assign_floating_ip
-  role    = "[controlplane, etcd]"
-  node_type = "master"
+  role               = var.master_node_roles
+  node_label         = var.master_node_label
 }
 
 # Create service nodes
@@ -54,10 +53,9 @@ module "service" {
   ssh_user           = var.ssh_user
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
-  ssh_bastion_host   = element(module.edge.public_ip_list, 0)
   assign_floating_ip = var.service_assign_floating_ip
-  role    = "[worker]"
-  node_type = "service"
+  role               = ["worker"]
+  node_label         = var.service_node_label
 }
 
 # Create edge nodes
@@ -74,10 +72,9 @@ module "edge" {
   ssh_user           = var.ssh_user
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
-  ssh_bastion_host   = element(module.edge.public_ip_list, 0)
   assign_floating_ip = var.edge_assign_floating_ip
-  role    = "[worker]"
-  node_type = "edge"
+  role               = ["worker"]
+  node_label         = var.edge_node_label
 }
 
 # Provision Kubernetes
@@ -86,10 +83,10 @@ module "rke" {
   master_nodes              = module.master.nodes
   edge_nodes                = module.edge.nodes
   service_nodes             = module.service.nodes
-  ssh_bastion_host          = element(module.edge.public_ip_list, 0)
+  ssh_bastion_host          = element(flatten([module.edge.public_ip_list, module.master.public_ip_list]), 0) 
   ssh_user                  = var.ssh_user
   ssh_key                   = var.ssh_key
-  kubeapi_sans_list         = module.edge.public_ip_list
+  kubeapi_sans_list         = flatten([module.edge.public_ip_list, module.master.public_ip_list])
   ignore_docker_version     = var.ignore_docker_version
   kubernetes_version        = var.kubernetes_version
   write_kube_config_cluster = var.write_kube_config_cluster
@@ -107,6 +104,7 @@ module "ansible" {
   source             = "./modules/ansible"
   cluster_prefix     = var.cluster_prefix
   ssh_user           = var.ssh_user
+  public_host        = element(flatten([module.edge.public_ip_list, module.master.public_ip_list]), 0) 
   master_nodes       = module.master.nodes
   edge_nodes         = module.edge.nodes
   service_nodes      = module.service.nodes

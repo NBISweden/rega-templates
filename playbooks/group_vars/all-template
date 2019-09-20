@@ -1,0 +1,4 @@
+public_host: ${public_host}
+ssh_user: ${ssh_user}
+edge_count: ${edge_count}
+private_key: ssh_key

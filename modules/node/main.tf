@@ -45,7 +45,7 @@ data "null_data_source" "nodes" {
     address = element(local.address_list, count.index)
     user    = var.ssh_user
     ssh_key = var.ssh_key
-    role    = var.role
-    node_type = var.node_type
+    role    = join(",", var.role)
+    node_label = var.node_label
   }
 }
