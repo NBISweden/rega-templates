@@ -94,16 +94,7 @@ terraform init -backend=backend.cfg
 ./scripts/05_apply_infra.sh
 ```
 
-Edit the `playbooks/roles/all` file to contain approximately:
-
-```yaml
-edge_host: {PREFIX}-edge-000
-edge_ip: '{{ hostvars.get(edge_host)["ansible_host"] }}'
-private_key: ssh_key
-ssh_user: ubuntu
-```
-
-Run ansible
+Run the ansible playbook for installing Docker
 
 ```bash
 ./scripts/06_provision_docker.sh
