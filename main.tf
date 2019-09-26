@@ -35,6 +35,7 @@ module "master" {
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
   assign_floating_ip = var.master_assign_floating_ip
+  dns_mapped_ips     = var.dns_mapped_ips
   role               = var.master_node_roles
   node_label         = var.master_node_label
 }
@@ -54,6 +55,7 @@ module "service" {
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
   assign_floating_ip = var.service_assign_floating_ip
+  dns_mapped_ips     = var.dns_mapped_ips
   role               = ["worker"]
   node_label         = var.service_node_label
 }
@@ -73,6 +75,7 @@ module "edge" {
   ssh_key            = var.ssh_key
   os_ssh_keypair     = module.keypair.keypair_name
   assign_floating_ip = var.edge_assign_floating_ip
+  dns_mapped_ips     = var.dns_mapped_ips
   role               = ["worker"]
   node_label         = var.edge_node_label
 }
