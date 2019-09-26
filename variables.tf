@@ -121,6 +121,11 @@ variable "edge_assign_floating_ip" {
   default     = true
 }
 
+variable "dns_mapped_ips" {
+  type = "list"
+  default = [""]
+}
+
 # Type for this one and next is supposed to be map(list(number)), but then the
 # pyhcl library can't parse the tf file, so for now it will stay like this, the
 # real type constraint can be found in modules/secgroup/variables.tf
