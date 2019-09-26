@@ -48,6 +48,10 @@ variable "floating_ip_pool" {
   default     = ""
 }
 
+variable "dns_mapped_ips" {
+  description = "Existing IP addresses to associate to instances"
+}
+
 variable "role" {
   description = "Role for this node"
 }
