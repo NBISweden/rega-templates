@@ -17,20 +17,27 @@ resource "openstack_compute_instance_v2" "instance" {
 
 # Allocate floating IPs (if required)
 resource "openstack_compute_floatingip_v2" "floating_ip" {
-  count = var.assign_floating_ip ? var.node_count : 0
+  count = var.assign_floating_ip && terraform.workspace == "default"  ? var.node_count : 0
   pool  = var.floating_ip_pool
 }
 
 # Associate floating IPs (if required)
 resource "openstack_compute_floatingip_associate_v2" "associate_floating_ip" {
-  count = var.assign_floating_ip ? var.node_count : 0
+  count = var.assign_floating_ip && terraform.workspace == "default" ? var.node_count : 0
   floating_ip = element(openstack_compute_floatingip_v2.floating_ip.*.address, count.index)
+  instance_id = element(openstack_compute_instance_v2.instance.*.id, count.index)
+}
+
+# Associate mapped floating IPs (if required)
+resource "openstack_compute_floatingip_associate_v2" "associate_mapped_floating_ip" {
+  count = var.assign_floating_ip && terraform.workspace != "default" ? var.node_count : 0
+  floating_ip = element(var.dns_mapped_ips, count.index)
   instance_id = element(openstack_compute_instance_v2.instance.*.id, count.index)
 }
 
 locals {
   # Workaround for list not supported in conditionals (https://github.com/hashicorp/terraform/issues/12453)
-  address_list = flatten([split(",", var.assign_floating_ip ? join(",", openstack_compute_floatingip_v2.floating_ip.*.address) : join(",", openstack_compute_instance_v2.instance.*.network.0.fixed_ip_v4))])
+  address_list = flatten([split(",", var.assign_floating_ip ? join(",", compact(flatten([openstack_compute_floatingip_v2.floating_ip.*.address, var.dns_mapped_ips]))) : join(",", openstack_compute_instance_v2.instance.*.network.0.fixed_ip_v4))])
 }
 
 data "template_file" "cloud_init" {
