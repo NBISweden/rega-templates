@@ -1,3 +1,3 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 terraform destroy -auto-approve -parallelism=10 -target=module.master -target=module.service -target=module.edge -target=module.inventory -target=module.keypair
