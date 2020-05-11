@@ -2,7 +2,7 @@
 resource "rke_cluster" "cluster" {
   cloud_provider {
     name = "openstack"
-    openstack_cloud_config {
+    openstack_cloud_provider {
       global {
         username    = var.os_username
         password    = var.os_password
@@ -88,25 +88,6 @@ provisioner: kubernetes.io/cinder
 reclaimPolicy: Delete
 parameters:
   availability: nova
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: terraform-tiller
-  namespace: kube-system
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: tiller
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-  - kind: ServiceAccount
-    name: terraform-tiller
-    namespace: kube-system
 EOL
 
 }
